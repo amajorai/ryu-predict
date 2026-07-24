@@ -1,0 +1,58 @@
+# apps-store/predict — the system-wide predictive-typing companion.
+#
+# Inline ghost-text autocomplete in ANY text field, accepted with Tab. This is
+# the productized form of `apps-store/predict-spike`: the spike's proven primitives
+# (UIA caret rect + context, the Tab-swallow keyboard hook, SendInput injection)
+# are lifted here and tied to Core's `/api/predict/complete` brain (which routes
+# every prediction through the Gateway). The companion stays deliberately dumb:
+# it reads the caret context, asks Core, and renders the reply — no model id,
+# Gateway URL, or policy ever lives in this process.
+#
+# Standalone Cargo crate (like `predict-spike`): no package.json, so the bun
+# `apps/*` workspace glob skips it. Build/verify with:
+#   cargo check  --manifest-path apps-store/predict/Cargo.toml
+#
+# Windows-first: the caret probe + keyboard hook + layered overlay are Win32/UIA.
+# On other platforms it compiles to a clear "unsupported on this OS" stub (the
+# macOS equivalent is AXTextMarker / kAXBoundsForRangeParameterizedAttribute;
+# not yet implemented).
+# Package renamed to `ryu-predict-overlay` so the canonical `ryu-predict` name
+# belongs to the extracted backend capability crate (`crates/ryu-predict` — the
+# completion engine + `/api/predict/*` surface). This overlay is the thin dumb
+# client of that brain. The produced binary name stays `ryu-predict` (the
+# `[[bin]]` name below is independent of the package name), so packaging/installers
+# that invoke the `ryu-predict` executable are unaffected; the overlay is only ever
+# built via `--manifest-path apps-store/predict/Cargo.toml`, never `-p`.
+[package]
+name = "ryu-predict-overlay"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[[bin]]
+name = "ryu-predict"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = "1"
+ghost-hands = { path = "../../crates/ghost/hands" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+reqwest = { version = "0.12", default-features = false, features = [
+    "blocking",
+    "json",
+    "rustls-tls",
+] }
+
+[target.'cfg(windows)'.dependencies]
+windows = { version = "0.59", features = [
+    "Win32_Foundation",
+    "Win32_Graphics_Gdi",
+    "Win32_UI_Accessibility",
+    "Win32_UI_WindowsAndMessaging",
+    "Win32_UI_Input_KeyboardAndMouse",
+    "Win32_System_Com",
+    "Win32_System_Ole",
+    "Win32_System_Threading",
+    "Win32_System_LibraryLoader",
+] }
