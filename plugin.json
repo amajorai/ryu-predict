@@ -1,0 +1,18 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "ryu.predict",
+  "version": "0.1.14",
+  "description": "Inline ghost-text autocomplete in any text field on your machine, accepted with Tab. A small companion reads the caret context and asks Core for a completion, and every prediction is routed through the Gateway — so no model id, Gateway URL, or policy ever lives in the companion process. Windows-first.",
+  "keywords": [
+    "autocomplete",
+    "predictions",
+    "typing",
+    "productivity"
+  ],
+  "extensions": {
+    "com.ryuhq.ryu": {
+      "id": "@ryu/predict",
+      "displayName": "Autocomplete"
+    }
+  }
+}
