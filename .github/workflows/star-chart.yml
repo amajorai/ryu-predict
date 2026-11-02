@@ -1,0 +1,18 @@
+name: Star chart
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  star-chart:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: jal-co/shieldcn@f7b63e9472b1b6addc295987763ef5ae64659077 # v1
+        with:
+          theme: violet
